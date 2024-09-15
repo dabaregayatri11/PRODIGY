@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cell:hover {
+            background-color: #ddd;
+        }
+
+        .info {
+            margin-top: 20px;
+        }
+
+        .restart-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Tic-Tac-Toe</h1>
+
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <div class="info" id="gameInfo">Player X's turn</div>
+        <button class="restart-btn" id="restartBtn">Restart Game</button>
+    </div>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let isGameActive = true;
+
+        const gameInfo = document.getElementById('gameInfo');
+        const boardCells = document.querySelectorAll('.cell');
+        const restartBtn = document.getElementById('restartBtn');
+
+        const WINNING_COMBINATIONS = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]              // Diagonals
+        ];
+
+        boardCells.forEach(cell => {
+            cell.addEventListener('click', handleClick);
+        });
+
+        restartBtn.addEventListener('click', restartGame);
+
+        function handleClick(e) {
+            const cellIndex = e.target.getAttribute('data-index');
+
+            if (board[cellIndex] === '' && isGameActive) {
+                board[cellIndex] = currentPlayer;
+                e.target.innerText = currentPlayer;
+
+                checkWinner();
+                togglePlayer();
+            }
+        }
+
+        function togglePlayer() {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            if (isGameActive) {
+                gameInfo.innerText = `Player ${currentPlayer}'s turn`;
+            }
+        }
+
+        function checkWinner() {
+            let roundWon = false;
+
+            for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
+                const [a, b, c] = WINNING_COMBINATIONS[i];
+
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                gameInfo.innerText = `Player ${currentPlayer} wins!`;
+                isGameActive = false;
+                return;
+            }
+
+            if (!board.includes('')) {
+                gameInfo.innerText = `It's a draw!`;
+                isGameActive = false;
+            }
+        }
+
+        function restartGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            isGameActive = true;
+            currentPlayer = 'X';
+            gameInfo.innerText = `Player X's turn`;
+            boardCells.forEach(cell => (cell.innerText = ''));
+        }
+    </script>
+
+</body>
+</html>
